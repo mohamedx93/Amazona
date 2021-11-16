@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
-import { AppBar, Container, Toolbar, Typography } from '@mui/material';
+import { AppBar, Container, Toolbar, Typography } from '@material-ui/core';
 import useStyles from '../utils/styles';
 
 interface Props {
@@ -16,11 +16,13 @@ export default function Layout({ children }: Props): ReactElement {
       </Head>
       <AppBar position="static" className={classes.navbar}>
         <Toolbar>
-          <Typography>Amamzona</Typography>
+          <Typography>Amazona</Typography>
         </Toolbar>
       </AppBar>
-      <Container>{children}</Container>
-      <footer>All rights reserved. Amazona corporation.</footer>
+      <Container className={classes.main}>{children}</Container>
+      <footer className={classes.footer}>
+        All rights reserved. Amazona corporation.
+      </footer>
     </div>
   );
 }
