@@ -9,30 +9,6 @@ import Document, {
 import { ServerStyleSheets } from '@material-ui/core/styles';
 
 export default class MyDocument extends Document {
-  // static async getInitialProps(ctx: any) {
-  //   const sheet = new ServerStyleSheets();
-  //   const originalRenderPage = ctx.renderPage;
-
-  //   try {
-  //     ctx.renderPage = () =>
-  //       originalRenderPage({
-  //         enhanceApp: (App: any) => (props: any) =>
-  //           sheet.collect(<App {...props} />),
-  //       });
-
-  //     const initialProps = await Document.getInitialProps(ctx);
-  //     return {
-  //       ...initialProps,
-  //       styles: (
-  //         <>
-  //           {initialProps.styles}
-  //           {sheet.getStyleElement()}
-  //         </>
-  //       ),
-  //     };
-  //   } finally {
-  //   }
-  // }
   render() {
     return (
       <Html lang="en">
@@ -60,7 +36,7 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
 
   return {
     ...initialProps,
-    // Styles fragment is rendered after the app and page rendering finish.
+
     styles: [
       <React.Fragment key="styles">
         {initialProps.styles}
@@ -69,23 +45,3 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
     ],
   };
 };
-
-// MyDocument.getInitialProps = async (ctx) => {
-//   const sheets = new ServerStyleSheets();
-//   const originalRenderPage = ctx.renderPage;
-//   ctx.renderPage = () => {
-//     return originalRenderPage({
-//       enhanceApp: (App: any) => (props: any) =>
-//         sheets.collect(<App {...props} />),
-//     });
-//   };
-//   const initialProps = await Document.getInitialProps(ctx);
-//   return {
-//     ...initialProps,
-//     styles: (
-//       <>
-//         {initialProps.styles},{sheets.getStyleElement()},
-//       </>
-//     ),
-//   };
-// };
