@@ -47,7 +47,9 @@ export default function ProductScreen({}: Props): ReactElement {
         <Grid item md={3} xs={12}>
           <List>
             <ListItem>
-              <Typography component="h1">{product.name}</Typography>
+              <Typography component="h1" variant="h1">
+                {product.name}
+              </Typography>
             </ListItem>
             <ListItem>
               <Typography>Category: {product.category}</Typography>
@@ -91,7 +93,7 @@ export default function ProductScreen({}: Props): ReactElement {
                 </Grid>
               </ListItem>
               <ListItem>
-                <Button fullWidth color="primary">
+                <Button variant="contained" fullWidth color="primary">
                   Add to cart
                 </Button>
               </ListItem>
