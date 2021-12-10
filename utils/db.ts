@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { ProductDocLean, ProductObj } from './Interfaces';
 
 dotenv.config({});
 
@@ -40,6 +41,17 @@ async function disconnect() {
   }
 }
 
-const db = { connect, disconnect };
+function convertDocToObj(doc: ProductDocLean): ProductObj {
+  if (doc) {
+    return {
+      ...doc,
+      _id: doc._id.toString(),
+      createdAt: doc.createdAt.toString(),
+      updatedAt: doc.updatedAt.toString(),
+    };
+  }
+  return doc;
+}
 
+const db = { connect, disconnect, convertDocToObj };
 export default db;

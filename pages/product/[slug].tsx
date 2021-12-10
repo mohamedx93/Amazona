@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { useRouter } from 'next/router';
-import data from '../../utils/data';
+import { GetServerSidePropsContext } from 'next';
 import Layout from '../../components/Layout';
 import NextLink from 'next/link';
 import Image from 'next/image';
@@ -14,14 +14,17 @@ import {
   Button,
 } from '@material-ui/core';
 import useStyles from '../../utils/styles';
+import Product from '../../models/Product';
+import db from '../../utils/db';
+import { ProductDocLean, ProductObj } from '../../utils/Interfaces';
 
-interface Props {}
+interface Props {
+  product?: ProductObj;
+}
 
-export default function ProductScreen({}: Props): ReactElement {
+export default function ProductScreen({ product }: Props): ReactElement {
   const classes = useStyles();
   const router = useRouter();
-  const { slug } = router.query;
-  const product = data.products.find((p) => p.slug === slug);
   if (!product) {
     return <div>Product not found!</div>;
   }
@@ -103,4 +106,17 @@ export default function ProductScreen({}: Props): ReactElement {
       </Grid>
     </Layout>
   );
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { params }: any = context;
+  const { slug } = params;
+  await db.connect();
+  const product: ProductDocLean = await Product.findOne({ slug }).lean();
+  await db.disconnect();
+  return {
+    props: {
+      product: db.convertDocToObj(product),
+    },
+  };
 }
