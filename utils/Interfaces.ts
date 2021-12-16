@@ -14,7 +14,8 @@ export interface ProductPoJo {
 }
 
 export interface ProductDoc extends ProductPoJo, Document {}
-export type ProductDocLean = LeanDocument<ProductDoc>;
+export interface ProductDocLean extends LeanDocument<ProductDoc> {}
+export interface ProductObjLean extends LeanDocument<ProductObj> {}
 export interface ProductModel extends Model<ProductDoc> {}
 export interface ProductObj extends ProductPoJo {
   _id: string;

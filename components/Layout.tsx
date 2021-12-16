@@ -16,10 +16,11 @@ import {
   ThemeProvider,
   Toolbar,
   Typography,
+  Badge,
 } from '@material-ui/core';
 import Cookies from 'js-cookie';
 import useStyles from '../utils/styles';
-import { Store, IState } from '../utils/store';
+import { Store } from '../utils/store';
 
 interface Props {
   title?: string;
@@ -33,7 +34,7 @@ export default function Layout({
   children,
 }: Props): ReactElement {
   const { state, dispatch } = useContext(Store);
-  const { darkMode } = state;
+  const { darkMode, cart } = state;
 
   const theme = createMuiTheme({
     typography: {
@@ -83,7 +84,16 @@ export default function Layout({
               <Switch checked={darkMode} onChange={darkModeChangeHandler} />
               <NextLink href="/cart" passHref>
                 <Link>
-                  <Typography>Cart</Typography>
+                  {cart.cartItems.length > 0 ? (
+                    <Badge
+                      color="secondary"
+                      badgeContent={cart.cartItems.length}
+                    >
+                      Cart
+                    </Badge>
+                  ) : (
+                    <Typography>Cart</Typography>
+                  )}
                 </Link>
               </NextLink>
               <NextLink href="/login" passHref>
