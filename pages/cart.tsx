@@ -20,13 +20,23 @@ import {
 } from '@material-ui/core';
 import NextLink from 'next/link';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import axios from 'axios';
 
 interface Props {}
 
-export default function cart({}: Props): ReactElement {
-  const { state } = useContext(Store);
+function cart({}: Props): ReactElement {
+  const { state, dispatch } = useContext(Store);
   const { cart } = state;
   const { cartItems } = cart;
+  const updateCartHandler = async (item: ICartItem, quantity: number) => {
+    const { data } = await axios.get(`/api/products/${item._id}`);
+    if (data.countInStock <= 0) {
+      window.alert('Sorry, this product is out of stock');
+      return;
+    }
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity } });
+  };
   return (
     <Layout>
       <Typography component="h1" variant="h1">
@@ -54,7 +64,7 @@ export default function cart({}: Props): ReactElement {
                   {cartItems.map((item: ICartItem) => (
                     <TableRow key={item._id}>
                       <TableCell>
-                        <NextLink href={`/product/[${item.slug}]`}>
+                        <NextLink href={`/product/${item.slug}`}>
                           <Link>
                             <Image
                               src={item.image}
@@ -66,24 +76,25 @@ export default function cart({}: Props): ReactElement {
                         </NextLink>
                       </TableCell>
                       <TableCell>
-                        <NextLink href={`/product/[${item.slug}]`}>
+                        <NextLink href={`/product/${item.slug}`}>
                           <Link>
                             <Typography>{item.name}</Typography>
                           </Link>
                         </NextLink>
                       </TableCell>
                       <TableCell align="right">
-                        <NextLink href={`/product/[${item.slug}]`}>
-                          <Link>
-                            <Select value={item.quantity}>
-                              {[...Array(item.countInStock).keys()].map((x) => (
-                                <MenuItem key={x + 1} value={x + 1}>
-                                  {x + 1}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </Link>
-                        </NextLink>
+                        <Select
+                          value={item.quantity}
+                          onChange={(e) =>
+                            updateCartHandler(item, e.target.value)
+                          }
+                        >
+                          {[...Array(item.countInStock).keys()].map((x) => (
+                            <MenuItem key={x + 1} value={x + 1}>
+                              {x + 1}
+                            </MenuItem>
+                          ))}
+                        </Select>
                       </TableCell>
                       <TableCell align="right">${item.price}</TableCell>
                       <TableCell align="right">
@@ -127,3 +138,5 @@ export default function cart({}: Props): ReactElement {
     </Layout>
   );
 }
+
+export default dynamic(() => Promise.resolve(cart), { ssr: false });
