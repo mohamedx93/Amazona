@@ -32,12 +32,19 @@ export default function ProductScreen({ product }: Props): ReactElement {
     return <div>Product not found!</div>;
   }
   const addToCartHandler = async () => {
+    const existingItem: ICartItem = state.cart.cartItems.find(
+      (x: ICartItem) => x._id === product._id
+    );
+    const newQuantity: number = existingItem ? existingItem.quantity + 1 : 1;
     const { data } = await axios.get(`/api/products/${product._id}`);
-    if (data.countInStock <= 0) {
-      window.alert('Sorry, this product is out of stock');
+    if (data.countInStock < newQuantity) {
+      window.alert('Sorry, the current product stock is not sufficient');
       return;
     }
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1 } });
+    dispatch({
+      type: 'CART_ADD_ITEM',
+      payload: { ...product, quantity: newQuantity },
+    });
     router.push('/cart');
   };
   return (

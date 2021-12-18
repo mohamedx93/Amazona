@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useContext } from 'react';
 
 import { InferGetStaticPropsType } from 'next';
 import {
@@ -16,11 +16,30 @@ import Layout from '../components/Layout';
 import NextLink from 'next/link';
 import db from '../utils/db';
 import Product from '../models/Product';
+import { ICartItem, Store } from '../utils/store';
+import axios from 'axios';
+import router from 'next/router';
+import { ProductObj } from '../utils/Interfaces';
 
 const Home = ({
   products,
 }: InferGetStaticPropsType<typeof getServerSideProps>): ReactElement => {
-  // const { products } = props;
+  const { state, dispatch } = useContext(Store);
+  const addToCartHandler = async (product: ProductObj) => {
+    const existingItem: ICartItem = state.cart.cartItems.find(
+      (x: ICartItem) => x._id === product._id
+    );
+    const newQuantity: number = existingItem ? existingItem.quantity + 1 : 1;
+    const { data } = await axios.get(`/api/products/${product._id}`);
+    if (data.countInStock < newQuantity) {
+      window.alert('Sorry, the current product stock is not sufficient');
+      return;
+    }
+    dispatch({
+      type: 'CART_ADD_ITEM',
+      payload: { ...product, quantity: newQuantity },
+    });
+  };
   return (
     <Layout>
       <div>
@@ -43,7 +62,11 @@ const Home = ({
                 </NextLink>
                 <CardActions>
                   <Typography>${product.price}</Typography>
-                  <Button size="small" color="primary">
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => addToCartHandler(product)}
+                  >
                     Add to cart
                   </Button>
                 </CardActions>

@@ -29,9 +29,12 @@ function cart({}: Props): ReactElement {
   const { state, dispatch } = useContext(Store);
   const { cart } = state;
   const { cartItems } = cart;
+  const removeItemHandler = async (item: ICartItem) => {
+    dispatch({ type: 'CART_REMOVE_ITEM', payload: item });
+  };
   const updateCartHandler = async (item: ICartItem, quantity: number) => {
     const { data } = await axios.get(`/api/products/${item._id}`);
-    if (data.countInStock <= 0) {
+    if (data.countInStock < quantity) {
       window.alert('Sorry, this product is out of stock');
       return;
     }
@@ -44,7 +47,10 @@ function cart({}: Props): ReactElement {
       </Typography>
       {cartItems.length === 0 ? (
         <div>
-          Cart is empty. <NextLink href="/">Go to shopping</NextLink>
+          Cart is empty.{' '}
+          <NextLink href="/" passHref>
+            <Link>Go to shopping</Link>
+          </NextLink>
         </div>
       ) : (
         <Grid container spacing={1}>
@@ -98,7 +104,11 @@ function cart({}: Props): ReactElement {
                       </TableCell>
                       <TableCell align="right">${item.price}</TableCell>
                       <TableCell align="right">
-                        <Button variant="contained" color="secondary">
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          onClick={() => removeItemHandler(item)}
+                        >
                           x
                         </Button>
                       </TableCell>
