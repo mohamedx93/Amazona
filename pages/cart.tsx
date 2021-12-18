@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext } from 'react';
+import React, { ReactElement, useContext, ChangeEvent } from 'react';
 import { ICartItem, Store } from '../utils/store';
 import Layout from '../components/Layout';
 import {
@@ -22,10 +22,12 @@ import NextLink from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 
 interface Props {}
 
-function cart({}: Props): ReactElement {
+function Cart({}: Props): ReactElement {
+  const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { cart } = state;
   const { cartItems } = cart;
@@ -39,6 +41,9 @@ function cart({}: Props): ReactElement {
       return;
     }
     dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity } });
+  };
+  const checkoutHandler = () => {
+    router.push('/shipping');
   };
   return (
     <Layout>
@@ -91,9 +96,13 @@ function cart({}: Props): ReactElement {
                       <TableCell align="right">
                         <Select
                           value={item.quantity}
-                          onChange={(e) =>
-                            updateCartHandler(item, e.target.value)
-                          }
+                          onChange={(e) => {
+                            const quantity =
+                              typeof e.target.value === 'number'
+                                ? e.target.value
+                                : 1;
+                            updateCartHandler(item, quantity);
+                          }}
                         >
                           {[...Array(item.countInStock).keys()].map((x) => (
                             <MenuItem key={x + 1} value={x + 1}>
@@ -136,7 +145,11 @@ function cart({}: Props): ReactElement {
                   </Typography>
                 </ListItem>
                 <ListItem>
-                  <Button variant="contained" color="primary">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={checkoutHandler}
+                  >
                     Check Out
                   </Button>
                 </ListItem>
@@ -149,4 +162,4 @@ function cart({}: Props): ReactElement {
   );
 }
 
-export default dynamic(() => Promise.resolve(cart), { ssr: false });
+export default dynamic(() => Promise.resolve(Cart), { ssr: false });

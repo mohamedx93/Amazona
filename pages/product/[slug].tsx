@@ -18,7 +18,7 @@ import Product from '../../models/Product';
 import db from '../../utils/db';
 import { ProductDocLean, ProductObj } from '../../utils/Interfaces';
 import axios from 'axios';
-import { Store } from '../../utils/store';
+import { ICartItem, Store } from '../../utils/store';
 
 interface Props {
   product?: ProductObj;
